@@ -188,9 +188,7 @@ def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_
     idx_aml[np.isnan(zh_ob)|np.isnan(zdr_ob)|np.isnan(kdp_ob)|np.isnan(rho_ob)|np.isnan(temp_ob)]=109
     
     idx = idx_iml.copy()
-    
-    print(idx.shape, height_ob.shape)
-    
+        
         
     idx[height_ob<ml_bot]=idx_bml[height_ob<ml_bot]
     idx[height_ob>ml_top]=idx_aml[height_ob>ml_top]
