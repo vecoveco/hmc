@@ -1,5 +1,6 @@
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
+import numpy as np
 
 def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_ob, band='X'):
     """
