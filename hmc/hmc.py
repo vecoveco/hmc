@@ -2,6 +2,25 @@ import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 import numpy as np
 
+def mbf(x, m, a, b):
+    """
+    Membershipf beta function (MBF) from Dolan and Rutledge 2009
+    
+    m ::: Center of MBF
+    a ::: Half-width of MBF
+    b ::: Slope of MBF
+    x ::: Variable (e.g. Zh, Zdr, Kdp or T)
+    
+    return ::: MBF for a Varible x
+    
+    """
+    
+    res = ((x - m) / a)**2
+    mbf = 1. / (1. + res**b)
+           
+    return mbf  
+
+
 def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_ob, band='X'):
     """
     HMC after Thompson et. al 2014
@@ -15,7 +34,7 @@ def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_
         
         Other:
         temp_ob = Temp.
-        ML = [BB top, BB peak, BB bottom]
+        ml_top, ml_bot = BB top,  BB bottom
         band = band of observing system (X, C or S)
         height_ob = observation height 
         
@@ -26,6 +45,8 @@ def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_
     The correction is done per eye using the MSF-Plots (Fig. 6/7/8)
     """
     
+    import skfuzzy as fuzz
+    from skfuzzy import control as ctrl
 
     # membership functions
     # --------------------
@@ -33,52 +54,52 @@ def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_
     ### ZH
     mz = np.arange(-20, 70, .5)
     mzh = ctrl.Antecedent(mz, 'refl.')
-    mzh_OT = fuzz.trapmf(mzh.universe, [-10, 3, 28,43])
-    mzh_WS = fuzz.trapmf(mzh.universe, [-0.2, 7.7,42.3,50.1])
-    mzh_FZ = fuzz.trapmf(mzh.universe, [-20.1,-14.4, 36.4, 43.6])
-    mzh_RN = fuzz.trapmf(mzh.universe, [-16.,-11, 49, 54.])
-    mzh_PL = fuzz.trapmf(mzh.universe, [-4.4, 0.8, 23.2, 28.4])
-    mzh_DN = fuzz.trapmf(mzh.universe, [-5.2, 6.6, 27.4, 39.2])
-    mzh_IC = fuzz.trapmf(mzh.universe, [-11.4,-2.2, 14.2, 23.4])
-    mzh_AG = fuzz.trapmf(mzh.universe, [ 12.9, 17.6, 38.4, 43.1])
+    mzh_OT = mbf(mzh.universe, 16., 17., 5.)
+    mzh_WS = mbf(mzh.universe, 25., 20., 10.)
+    mzh_FZ = mbf(mzh.universe, 11.,28., 15. )
+    mzh_RN = mbf(mzh.universe, 19., 30., 15.)
+    mzh_PL = mbf(mzh.universe, 12., 13., 10.)
+    mzh_DN = mbf(mzh.universe, 17., 14., 5.)
+    mzh_IC = mbf(mzh.universe, 6., 11., 5.)
+    mzh_AG = mbf(mzh.universe, 28., 12., 10.)
 
     ### ZDR
     md = np.arange(-4, 12, .1)
     mzdr = ctrl.Antecedent(md, 'diff refl')
-    mzdr_OT = fuzz.trapmf(mzdr.universe, [-1.2,-0.9, 1.9, 2.2])
-    mzdr_WS = fuzz.trapmf(mzdr.universe, [-3.8,-1.8, 6.8, 8.8])
-    mzdr_PL = fuzz.trapmf(mzdr.universe, [ 0.8, 2.3, 8.7, 10.2])
-    mzdr_DN = fuzz.trapmf(mzdr.universe, [ 1., 1.5, 3.7, 4.2])
-    mzdr_IC = fuzz.trapmf(mzdr.universe, [-0.9,-0.4, 0.4, 0.9])
-    mzdr_AG = fuzz.trapmf(mzdr.universe, [-1.1,-0.9, 0.9, 1.1])
+    mzdr_OT = mbf(mzdr.universe, 0.5, 1.5, 15.)
+    mzdr_WS = mbf(mzdr.universe, 3., 5., 10.)
+    mzdr_PL = mbf(mzdr.universe, 5.5, 3.7, 10)
+    mzdr_DN = mbf(mzdr.universe, 2.6, 1.3, 10.)
+    mzdr_IC = mbf(mzdr.universe, 0., 1., 20.)
+    mzdr_AG = mbf(mzdr.universe, 0., 1., 20.)
     #mzdr_GR = fuzz.trapmf(mzdr.universe, [-0.3,0, 1, 1.3])
 
     ### KDP
-    mk = np.arange(-1, 4, .1)
+    mk = np.arange(-1, 4, .01)
     mkdp = ctrl.Antecedent(mk, 'spec phase shift')
     ########################################################## X
-    mkdp_PLx = fuzz.trapmf(mkdp.universe, [-0.3, 0.1, 0.8, 1.2])
-    mkdp_DNx = fuzz.trapmf(mkdp.universe, [-0.5, 0.4, 1.8, 2.5])
-    mkdp_ICx = fuzz.trapmf(mkdp.universe, [-0.9,-0.4, 0.4, 0.9])
-    mkdp_AGx = fuzz.trapmf(mkdp.universe, [-0.9,-0.4, 0.4, 0.9])
+    mkdp_PLx = mbf(mkdp.universe, 0.46, 0.45, 5.)
+    mkdp_DNx = mbf(mkdp.universe, 1.32, 1.28, 5.)
+    mkdp_ICx = mbf(mkdp.universe, 0., 0.55, 5.)
+    mkdp_AGx = mbf(mkdp.universe, 0., 0.55, 5)
 
     ######################################################### C
-    mkdp_PLc = fuzz.trapmf(mkdp.universe, [-0.2, 0.05, 0.5, 0.8])
-    mkdp_DNc = fuzz.trapmf(mkdp.universe, [-0.5, 0.2, 1.2, 1.5])
-    mkdp_ICc = fuzz.trapmf(mkdp.universe, [-0.6,-0.2, 0.2, 0.6])
-    mkdp_AGc = fuzz.trapmf(mkdp.universe, [-0.6,-0.2, 0.2, 0.6])
+    mkdp_PLc = mbf(mkdp.universe, 0.27, 0.26, 5.)
+    mkdp_DNc = mbf(mkdp.universe, 1.0, 0.7, 5.)
+    mkdp_ICc = mbf(mkdp.universe, 0., 0.325, 5.)
+    mkdp_AGc = mbf(mkdp.universe, 0., 0.325, 5.)
 
     ######################################################### S
-    mkdp_PLs = fuzz.trapmf(mkdp.universe, [-0.1, 0., 0.2, 0.4])
-    mkdp_DNs = fuzz.trapmf(mkdp.universe, [-0.2, 0.1, 0.5, 0.7])
-    mkdp_ICs = fuzz.trapmf(mkdp.universe, [-0.3,-0.15, 0.15, 0.3])
-    mkdp_AGs = fuzz.trapmf(mkdp.universe, [-0.3,-0.15, 0.15, 0.3])
+    mkdp_PLs = mbf(mkdp.universe, 0.13, 0.13, 5.)
+    mkdp_DNs = mbf(mkdp.universe, 0.31, 0.3, 5.)
+    mkdp_ICs = mbf(mkdp.universe, 0., 0.2, 5)
+    mkdp_AGs = mbf(mkdp.universe, 0., 0.2, 5.)
 
     #### RHO
     mr=np.arange(0, 1.3, .01)
     mrho = ctrl.Antecedent(mr, 'corr coef')
-    mrho_OT = fuzz.trapmf(mrho.universe, [.88,.91,1,1.01])
-    mrho_WS = fuzz.trapmf(mrho.universe, [.55,.6,.94,.97])
+    mrho_OT = mbf(mrho.universe, 0.96, 0.06, 10)
+    mrho_WS = mbf(mrho.universe, 0.75, 0.2, 30)
     #mrho_FZ = fuzz.trapmf(mrho.universe, [.95,.97,1,1.01])
     #mrho_RN = fuzz.trapmf(mrho.universe, [.92,.95,1,1.01])
     #mrho_GR = fuzz.trapmf(mrho.universe, [.90,.97,1,1.01])
@@ -86,8 +107,8 @@ def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_
     ### T
     mt=np.arange(-40, 40, .1)
     mtemp = ctrl.Antecedent(mt, 'corr coef')
-    mtemp_FZ = fuzz.trapmf(mtemp.universe, [-8,-7,-1,0])
-    mtemp_RN = fuzz.trapmf(mtemp.universe, [-1,0,50,60])
+    mtemp_FZ = mbf(mtemp.universe, -4., 3., 20.)
+    mtemp_RN = mbf(mtemp.universe, 25., 25., 40)
     
     
     # Fuzzy Logic
@@ -189,14 +210,18 @@ def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_
     idx_aml[np.isnan(zh_ob)|np.isnan(zdr_ob)|np.isnan(kdp_ob)|np.isnan(rho_ob)|np.isnan(temp_ob)]=109
     
     idx = idx_iml.copy()
-        
+    
+    print(idx.shape, height_ob.shape)
+    
         
     idx[height_ob<ml_bot]=idx_bml[height_ob<ml_bot]
     idx[height_ob>ml_top]=idx_aml[height_ob>ml_top]
     
     return idx, labels, hmc_code
-    #return hmc_class, maks, labels
         
+        
+    
+    
         
     
     
