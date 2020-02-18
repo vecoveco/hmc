@@ -44,9 +44,6 @@ def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_
     Note: The Values in Tab.5. in Thompson et. al 2014 are sometimes wrong
     The correction is done per eye using the MSF-Plots (Fig. 6/7/8)
     """
-    
-    import skfuzzy as fuzz
-    from skfuzzy import control as ctrl
 
     # membership functions
     # --------------------
