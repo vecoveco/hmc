@@ -1,11 +1,11 @@
 # Hydrometeor Clasification
 ---------------------------
 
-###  test test
+###  Required modules
 
-1. some text
+- numpy
 
-2. some text
+- wradlib
 
-3. some text
+- csu_radartools
 
