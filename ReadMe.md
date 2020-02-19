@@ -4,8 +4,7 @@
 ###  Required modules
 
 - numpy
-
 - wradlib
-
 - csu_radartools
+- pandas
 
