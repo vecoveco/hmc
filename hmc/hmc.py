@@ -40,9 +40,7 @@ def hmc_thompson(zh_ob, zdr_ob, kdp_ob, rho_ob, temp_ob, ml_top, ml_bot, height_
         
     Output ::: HMC after Thompson et. al 2014
     
-    
-    Note: The Values in Tab.5. in Thompson et. al 2014 are sometimes wrong
-    The correction is done per eye using the MSF-Plots (Fig. 6/7/8)
+
     """
 
     # membership functions
